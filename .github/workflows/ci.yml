@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+
+# Only the latest commit on a branch or PR needs checking; cancel superseded runs.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: leafo/gh-actions-lua@v10
+        with:
+          # FiveM runs Lua 5.4.
+          luaVersion: '5.4'
+
+      - uses: leafo/gh-actions-luarocks@v4
+
+      - name: Install tooling
+        run: luarocks install luacheck
+
+      - name: Lint
+        run: luacheck server
+
+      # The core is vendored from the Lua SDK, where its test suite lives.
+      # Drift is reported loudly but does not fail the build, so an upstream
+      # SDK release cannot break this repo without a change here.
+      - name: Check the vendored SDK for drift
+        run: |
+          curl -sSf -o upstream.lua \
+            https://raw.githubusercontent.com/top-stats/analytics-lua-sdk/master/src/topstats.lua
+          tail -n +3 server/topstats.lua > vendored.lua
+          if ! diff -q upstream.lua vendored.lua > /dev/null; then
+            echo "::warning::server/topstats.lua has drifted from the Lua SDK; re-vendor when convenient."
+          else
+            echo "vendored copy matches upstream"
+          fi

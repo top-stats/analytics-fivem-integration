@@ -1,6 +1,8 @@
-# TopStats for FiveM
+# TopStats for FiveM and RedM
 
-The official TopStats Analytics resource for FiveM servers. Player connects,
+The official TopStats Analytics resource for FiveM and RedM servers - one
+resource for both, because it only touches server-side natives the two
+CitizenFX runtimes share. Player connects,
 drops with session length, and a server stats heartbeat land in your TopStats
 workspace as events, attributed per player - plus an export so any resource
 can track its own events through the same buffered client.
@@ -22,6 +24,10 @@ message content of any kind.
 
 3. Restart. Connects, drops, and server stats appear in your workspace
    within seconds.
+
+On RedM the steps are identical; the manifest declares `game 'common'`, so
+the same resource runs on both. Set `topstats_source "redm"` there to keep
+the two games distinguishable in your workspace.
 
 ## What gets sent
 

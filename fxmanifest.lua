@@ -1,4 +1,6 @@
 fx_version 'cerulean'
+-- 'common' covers both CitizenFX games: FiveM (GTA V) and RedM (RDR2). The
+-- resource only touches server-side natives shared by both runtimes.
 game 'common'
 
 name 'topstats'
